@@ -1,0 +1,6 @@
+{
+  "name": "TechVibe",
+  "description": "TechVibe - Premium IT and Artificial Intelligence engineering agency platform rəqəmsal platforması. Built by Eldar Ramazanov.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
