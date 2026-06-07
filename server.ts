@@ -31,6 +31,22 @@ const RESOLVED_HMAC_SECRET = HMAC_SECRET ?? crypto.randomBytes(32).toString("hex
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const IS_PROD = process.env.NODE_ENV === "production";
 
+// ─── Admin Panel İnteqrasiyası ────────────────────────────────────────────────
+const ADMIN_URL    = process.env.ADMIN_URL?.trim();
+const INTERNAL_KEY = process.env.INTERNAL_API_KEY?.trim();
+
+async function notifyAdmin(path: string, body: object): Promise<void> {
+  if (!ADMIN_URL || !INTERNAL_KEY) return;
+  try {
+    await fetch(`${ADMIN_URL}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-internal-key": INTERNAL_KEY },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(5000),
+    });
+  } catch {}
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 //  SECURITY CONSTANTS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -254,6 +270,10 @@ function buildPrompt(lang: string): string {
 //  SECURITY HEADERS MIDDLEWARE
 // ─────────────────────────────────────────────────────────────────────────────
 function securityHeaders(req: Request, res: Response, next: NextFunction) {
+  // Visitor tracking — fire and forget
+  if (req.path.startsWith("/api/") === false) {
+    notifyAdmin("/internal/visitor", { path: req.path });
+  }
   const nonce = crypto.randomBytes(16).toString("base64");
 
   // Strict CORS: only same origin or configured APP_URL
@@ -352,7 +372,10 @@ async function startServer() {
     const ip = getClientIP(req);
 
     const rl = consultantRL.check(ip, SEC.RATE_CONSULTANT_MAX);
-    if (!rl.allowed) { res.status(429).json({ error: rl.reason }); return; }
+    if (!rl.allowed) {
+      notifyAdmin("/internal/security", { type: "RATE_LIMIT", ip, detail: rl.reason, severity: "medium" });
+      res.status(429).json({ error: rl.reason }); return;
+    }
 
     if (!req.is("application/json")) {
       res.status(415).json({ error: "Content-Type must be application/json." }); return;
@@ -364,6 +387,7 @@ async function startServer() {
     }
 
     if (hasInjection(message)) {
+      notifyAdmin("/internal/security", { type: "INJECTION_ATTEMPT", ip, detail: "Prompt injection blocked", severity: "high" });
       res.status(400).json({ error: "Invalid message content." }); return;
     }
 
@@ -416,6 +440,15 @@ async function startServer() {
         { role: "assistant", content: text },
       ]);
 
+      // Notify admin panel
+      const updatedSession = getSession(sessionId, ip);
+      if (updatedSession) {
+        notifyAdmin("/internal/chat", {
+          sessionId, ip, lang,
+          messages: updatedSession.msgs,
+        });
+      }
+
       res.json({ text });
 
     } catch (err: any) {
@@ -460,6 +493,9 @@ async function startServer() {
       messageLength: message.length,
       timestamp: new Date().toISOString(),
     });
+
+    // Notify admin panel
+    notifyAdmin("/internal/contact", { name, email, message });
 
     res.json({ success: true, message: "Müraciətiniz qeydə alındı." });
   });
