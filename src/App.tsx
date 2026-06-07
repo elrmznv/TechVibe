@@ -543,7 +543,9 @@ export default function App() {
               {/* Consult CTA Button */}
               <button
                 type="button"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   setPrefilledServiceMessage("");
                   setClientMessage("");
                   setContactModalOpen(true);
@@ -1102,8 +1104,9 @@ export default function App() {
       </section>
 
       {/* 6. Lead Scoping and Contact Interactive Modal */}
-      {contactModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div
+        className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-opacity duration-200 ${contactModalOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+      >
           <div className="absolute inset-0 bg-black/85 backdrop-blur-md" onClick={() => setContactModalOpen(false)} />
           
           <div className="relative w-full max-w-xl bg-bg-panel backdrop-blur-2xl rounded-2xl border border-cyan-500/30 overflow-hidden shadow-2xl z-10 animate-glow">
@@ -1200,7 +1203,7 @@ export default function App() {
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* 7. Detailed Service Window (Modal) */}
       {selectedService && (
