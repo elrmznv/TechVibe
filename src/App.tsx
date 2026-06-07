@@ -288,9 +288,9 @@ export default function App() {
     }
   };
 
-  // Global 3D physical reaction listener on clicking or touching any button/clickable element on the site
+  // Global 3D physical reaction listener
   useEffect(() => {
-    const handleGlobalClick = (event: MouseEvent | TouchEvent) => {
+    const handleGlobalClick = (event: MouseEvent) => {
       let target = event.target as HTMLElement | null;
       while (target && target !== document.body) {
         if (
@@ -306,12 +306,9 @@ export default function App() {
       }
     };
 
-    window.addEventListener("click", handleGlobalClick, { passive: true });
-    window.addEventListener("touchstart", handleGlobalClick, { passive: true });
-
+    window.addEventListener("click", handleGlobalClick);
     return () => {
       window.removeEventListener("click", handleGlobalClick);
-      window.removeEventListener("touchstart", handleGlobalClick);
     };
   }, []);
 
@@ -544,24 +541,20 @@ export default function App() {
               </div>
 
               {/* Consult CTA Button */}
-              <motion.button
+              <button
                 onClick={() => {
                   setPrefilledServiceMessage("");
                   setClientMessage("");
                   setContactModalOpen(true);
-                  if (typeof window !== "undefined") {
-                    window.dispatchEvent(new CustomEvent("btn-click-3d"));
-                  }
                 }}
-                className="relative px-5 py-2.5 rounded-lg text-sm font-semibold tracking-wide text-white overflow-hidden group shadow-md shadow-cyan-500/5 cursor-pointer"
-                {...button3DProps}
+                className="relative px-5 py-2.5 rounded-lg text-sm font-semibold tracking-wide text-white overflow-hidden group shadow-md shadow-cyan-500/5 cursor-pointer active:scale-95 transition-transform"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-indigo-600 group-hover:scale-105 transition-all duration-300" />
                 <span className="relative flex items-center gap-2">
                   <PhoneCall className="w-4 h-4" />
                   {dict.navbar.consultButton}
                 </span>
-              </motion.button>
+              </button>
             </div>
 
             {/* Mobile menu trigger */}
