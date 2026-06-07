@@ -542,18 +542,16 @@ export default function App() {
 
               {/* Consult CTA Button */}
               <button
+                type="button"
                 onClick={() => {
                   setPrefilledServiceMessage("");
                   setClientMessage("");
                   setContactModalOpen(true);
                 }}
-                className="relative px-5 py-2.5 rounded-lg text-sm font-semibold tracking-wide text-white overflow-hidden group shadow-md shadow-cyan-500/5 cursor-pointer active:scale-95 transition-transform"
+                className="relative z-10 px-5 py-2.5 rounded-lg text-sm font-semibold tracking-wide text-white group shadow-md shadow-cyan-500/5 cursor-pointer active:scale-95 transition-transform bg-gradient-to-r from-cyan-500 to-indigo-600 hover:opacity-90 flex items-center gap-2"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-indigo-600 group-hover:scale-105 transition-all duration-300" />
-                <span className="relative flex items-center gap-2">
-                  <PhoneCall className="w-4 h-4" />
-                  {dict.navbar.consultButton}
-                </span>
+                <PhoneCall className="w-4 h-4" />
+                {dict.navbar.consultButton}
               </button>
             </div>
 
