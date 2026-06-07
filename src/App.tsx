@@ -36,11 +36,8 @@ const button3DProps = {
     z: 12,
   },
   whileTap: { 
-    scale: 0.94, 
-    rotateX: -16, 
-    rotateY: -16,
-    z: -12,
-    transition: { type: "spring", stiffness: 600, damping: 11 }
+    scale: 0.97,
+    transition: { type: "spring", stiffness: 400, damping: 20 }
   },
   style: { transformStyle: "preserve-3d" as const, perspective: 800 }
 };
@@ -336,7 +333,7 @@ export default function App() {
     <div className="relative min-h-screen bg-bg-darkest text-gray-200 selection:bg-cyan-500/30 overflow-x-hidden bg-grid-pattern">
       
       {/* 1. Header & Navigation Panel */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glassmorphism border-b border-white/5 transition-all duration-300">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#090b12]/90 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
